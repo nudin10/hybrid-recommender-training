@@ -6,7 +6,7 @@ import json
 from data_loader.embeddings_consolidator import mean_pooling_consolidator
 import numpy as np
 import torch
-from tools.errors import RedisValueInvalid
+from errors.redis import RedisValueInvalid
 
 
 def load_into_redis_by_batch(r: Redis_Client, model_key:str, file_path: str, batch_num=1000):
