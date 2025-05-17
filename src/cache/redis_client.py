@@ -2,9 +2,6 @@ import redis
 import os
 import redis.exceptions
 
-
-NDJSON_FILE = "./load_redis.ndjson"
-
 class RedisCredentialsNotFound(Exception):
     pass
 
