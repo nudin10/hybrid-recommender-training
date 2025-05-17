@@ -1,6 +1,8 @@
 # Data
 *.jsonl
 *.ndjson
+*.inter
+*.item
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

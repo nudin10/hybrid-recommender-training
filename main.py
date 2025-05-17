@@ -7,6 +7,11 @@ from src.cache.redis_client import init_redis
 from src.tools.telegram_bot import init_telegram_bot
 from src.tools.logger import init_global_logger
 from data_loader.data_loader import load_data_into_redis
+from model.model_data_loader import load_data
+from model.recommendation_model import RecommenderSystemModel
+from model.hybrid_model import HybridRecommenderModel
+from model.bert4Rec import Bert4RecModel
+from src.analysis.results import collect, analyse, visualise
 
 async def main():
     try:
@@ -21,6 +26,29 @@ async def main():
         await load_data_into_redis(r, DATA_PATH)
     except Exception as e:
         raise RuntimeError(f"Error loading data into Redis: {e}")
+    
+    try:
+        load_data()
+    except Exception as e:
+        raise RuntimeError(f"Error loading RecBole data: {e}")
+    
+    try:
+        models = [
+            Bert4RecModel,
+            HybridRecommenderModel
+        ]
+
+        for _model in models:
+            model: RecommenderSystemModel = _model()
+            model.train()
+            model.evaluate()
+        
+            collect()
+            analyse()
+            visualise()
+
+    except Exception as e:
+        raise RuntimeError(f"Error loading training custom Model: {e}")
 
 if __name__ == "__main__":
     try:
