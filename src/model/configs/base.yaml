@@ -11,3 +11,4 @@ gpu_id: '0'
 state: DEBUG
 reproducibility: False # set to False for faster training
 show_progress: True
+seed: 42
