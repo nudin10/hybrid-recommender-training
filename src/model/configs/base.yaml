@@ -1,0 +1,13 @@
+# Dataset column definition
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+ITEM_EMBEDDING_FIELD: item_embedding
+
+# Sequence config
+MAX_ITEM_LIST_LENGTH: 50
+
+# General config
+gpu_id: '0'
+state: DEBUG
+reproducibility: False # set to False for faster training
+show_progress: True
