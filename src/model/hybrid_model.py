@@ -1,5 +1,5 @@
-from model.abstract.recommendation_model import RecommenderSystemModel
-from model.abstract.custom_model import HybridRecommenderModel
+from model.definition.recommendation_model import RecommenderSystemModel
+from model.definition.custom_model import HybridRecommenderModel
 from recbole.data.dataset.sequential_dataset import SequentialDataset
 from recbole.data import create_dataset, data_preparation
 from recbole.trainer import Trainer

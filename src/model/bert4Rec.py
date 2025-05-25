@@ -1,5 +1,5 @@
 from recbole.model.sequential_recommender.bert4rec import BERT4Rec
-from model.abstract.recommendation_model import RecommenderSystemModel
+from model.definition.recommendation_model import RecommenderSystemModel
 from recbole.config import Config
 from recbole.data.dataset.sequential_dataset import SequentialDataset
 from recbole.data import create_dataset, data_preparation
