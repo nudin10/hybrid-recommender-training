@@ -8,7 +8,7 @@ from src.tools.telegram_bot import init_telegram_bot
 from src.tools.logger import init_global_logger
 from data_loader.data_loader import load_data_into_redis
 from model.model_data_loader import load_data
-from model.recommendation_model import RecommenderSystemModel
+from model.definition.recommendation_model import RecommenderSystemModel
 from model.hybrid_model import HybridRecommenderModel
 from model.bert4Rec import Bert4RecModel
 from src.analysis.results import collect, analyse, visualise
