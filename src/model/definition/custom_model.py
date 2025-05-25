@@ -4,11 +4,15 @@ from recbole.model.abstract_recommender import SequentialRecommender
 from recbole.data.dataset import Dataset
 from recbole.model.layers import TransformerEncoder
 from recbole.data.interaction import Interaction
+from transformers import PerceiverConfig, PerceiverModel
 
 class HybridRecommenderModel(SequentialRecommender):
     def __init__(self, config, dataset: Dataset):
         super().__init__(config, dataset)
 
+        # Variable initialisation
+
+        # --- SLM embeddings initialisation ---
         slm_pretrained_weights = dataset.get_preload_weight(self.item_id_field)
         if slm_pretrained_weights is None:
             raise ValueError("Preloaded SLM embeddings not found!")
@@ -21,14 +25,14 @@ class HybridRecommenderModel(SequentialRecommender):
         # any performance differential can be more clearly attributed to the impact of adding SLM embeddings
         self.slm_item_embedding = nn.Embedding.from_pretrained(slm_pretrained_weights, freeze=True)
 
+        # --- Bert4Rec Transformer Encoder variables initialisation ---
         # from RecBole's BERT4Rec implementation
-        # load parameters info
         self.n_layers = config["n_layers"]
         self.n_heads = config["n_heads"]
-        self.hidden_size = config["hidden_size"]  # same as embedding_size
+        self.hidden_size = config["hidden_size"]
         self.inner_size = config[
             "inner_size"
-        ]  # the dimensionality in feed-forward layer
+        ]  
         self.hidden_dropout_prob = config["hidden_dropout_prob"]
         self.attn_dropout_prob = config["attn_dropout_prob"]
         self.hidden_act = config["hidden_act"]
@@ -42,13 +46,13 @@ class HybridRecommenderModel(SequentialRecommender):
         self.MASK_INDEX = config["MASK_INDEX"]
 
         self.loss_type = config["loss_type"]
-        # we only need compute the loss at the masked position
         try:
             assert self.loss_type in ["BPR", "CE"]
         except AssertionError:
             raise AssertionError("Make sure 'loss_type' in ['BPR', 'CE']!")
         
         self.initializer_range = config["initializer_range"]
+        self.fused_embedding_size = config['fused_embedding_size']
 
         self.encoder = TransformerEncoder(
             n_layers=self.n_layers,
@@ -68,6 +72,35 @@ class HybridRecommenderModel(SequentialRecommender):
         self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
         self.output_bias = nn.Parameter(torch.zeros(self.n_items))
 
+        # --- Perceiver Network variables initialisation ---
+        # uses Huggingface's Transformer implementation of PerceiverIO
+        perceiver_config = PerceiverConfig(
+            # Input dimension to Perceiver
+            d_model=self.fused_embedding_size,
+
+            # Latent array parameters
+            num_latents=config['perceiver_num_latents'],
+            d_latents=config['perceiver_latent_dim'],
+
+            # Attention block parameters
+            num_cross_attention_heads=config['perceiver_num_cross_attention_heads'],
+            num_self_attention_heads=config['perceiver_num_self_attention_heads'],
+            num_blocks=config['perceiver_num_blocks'], # Number of self-attention blocks for latents
+            num_cross_attention_blocks=config['perceiver_num_cross_attention_blocks'], # Number of cross-attention blocks
+
+            dropout=config['perceiver_dropout'],
+            attention_probs_dropout_prob=config['perceiver_dropout'],
+            hidden_act="gelu",
+            initializer_range=0.02, 
+            layer_norm_eps=1e-12,
+        )
+
+        self.perceiver_model = PerceiverModel(perceiver_config)
+        self.perceiver_output_size = perceiver_config.d_latents
+        self.dense = nn.Linear(self.perceiver_output_size, self.n_items)
+        self.loss_fct = nn.CrossEntropyLoss()
+
+        # --- Initialise weights ---
         self.apply(self._init_weights)
 
     def _init_weights(self, module):
