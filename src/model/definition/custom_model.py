@@ -54,6 +54,7 @@ class HybridRecommenderModel(SequentialRecommender):
         self.initializer_range = config["initializer_range"]
         self.fused_embedding_size = config['fused_embedding_size']
 
+        # Transformer initialisation
         self.encoder = TransformerEncoder(
             n_layers=self.n_layers,
             n_heads=self.n_heads,
@@ -64,13 +65,6 @@ class HybridRecommenderModel(SequentialRecommender):
             hidden_act=self.hidden_act,
             layer_norm_eps=self.layer_norm_eps,
         )
-
-        self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
-        self.dropout = nn.Dropout(self.hidden_dropout_prob)
-        self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
-        self.output_gelu = nn.GELU()
-        self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
-        self.output_bias = nn.Parameter(torch.zeros(self.n_items))
 
         # --- Perceiver Network variables initialisation ---
         # uses Huggingface's Transformer implementation of PerceiverIO
@@ -97,8 +91,18 @@ class HybridRecommenderModel(SequentialRecommender):
 
         self.perceiver_model = PerceiverModel(perceiver_config)
         self.perceiver_output_size = perceiver_config.d_latents
+
+        # --- Custom prediction head ---
         self.dense = nn.Linear(self.perceiver_output_size, self.n_items)
         self.loss_fct = nn.CrossEntropyLoss()
+
+        # --- Bert4Rec forward layer initialisation ---
+        # self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
+        # self.dropout = nn.Dropout(self.hidden_dropout_prob)
+        # self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
+        # self.output_gelu = nn.GELU()
+        # self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
+        # self.output_bias = nn.Parameter(torch.zeros(self.n_items))
 
         # --- Initialise weights ---
         self.apply(self._init_weights)
@@ -227,3 +231,4 @@ class HybridRecommenderModel(SequentialRecommender):
             torch.matmul(seq_output, test_items_emb.transpose(0, 1)) + self.output_bias
         )  # [B, item_num]
         return scores
+    
