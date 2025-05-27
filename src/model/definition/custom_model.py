@@ -92,17 +92,13 @@ class HybridRecommenderModel(SequentialRecommender):
         self.perceiver_model = PerceiverModel(perceiver_config)
         self.perceiver_output_size = perceiver_config.d_latents
 
-        # --- Custom prediction head ---
-        self.dense = nn.Linear(self.perceiver_output_size, self.n_items)
-        self.loss_fct = nn.CrossEntropyLoss()
-
         # --- Bert4Rec forward layer initialisation ---
-        # self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
-        # self.dropout = nn.Dropout(self.hidden_dropout_prob)
-        # self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
-        # self.output_gelu = nn.GELU()
-        # self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
-        # self.output_bias = nn.Parameter(torch.zeros(self.n_items))
+        self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
+        self.dropout = nn.Dropout(self.hidden_dropout_prob)
+        self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
+        self.output_gelu = nn.GELU()
+        self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
+        self.output_bias = nn.Parameter(torch.zeros(self.n_items))
 
         # --- Initialise weights ---
         self.apply(self._init_weights)
