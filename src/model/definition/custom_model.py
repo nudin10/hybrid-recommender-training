@@ -4,7 +4,6 @@ from recbole.model.abstract_recommender import SequentialRecommender
 from recbole.data.dataset import Dataset
 from recbole.model.layers import TransformerEncoder
 from recbole.data.interaction import Interaction
-from transformers import PerceiverConfig, PerceiverModel
 
 class HybridRecommenderModel(SequentialRecommender):
     def __init__(self, config, dataset: Dataset):
@@ -52,7 +51,8 @@ class HybridRecommenderModel(SequentialRecommender):
             raise AssertionError("Make sure 'loss_type' in ['BPR', 'CE']!")
         
         self.initializer_range = config["initializer_range"]
-        self.fused_embedding_size = config['fused_embedding_size']
+        # Concatenated embedding dimension
+        self.fused_embedding_size = self.hidden_size + self.slm_embedding_dim
 
         # Transformer initialisation
         self.encoder = TransformerEncoder(
@@ -66,36 +66,11 @@ class HybridRecommenderModel(SequentialRecommender):
             layer_norm_eps=self.layer_norm_eps,
         )
 
-        # --- Perceiver Network variables initialisation ---
-        # uses Huggingface's Transformer implementation of PerceiverIO
-        perceiver_config = PerceiverConfig(
-            # Input dimension to Perceiver
-            d_model=self.fused_embedding_size,
-
-            # Latent array parameters
-            num_latents=config['perceiver_num_latents'],
-            d_latents=config['perceiver_latent_dim'],
-
-            # Attention block parameters
-            num_cross_attention_heads=config['perceiver_num_cross_attention_heads'],
-            num_self_attention_heads=config['perceiver_num_self_attention_heads'],
-            num_blocks=config['perceiver_num_blocks'], # Number of self-attention blocks for latents
-            num_cross_attention_blocks=config['perceiver_num_cross_attention_blocks'], # Number of cross-attention blocks
-
-            dropout=config['perceiver_dropout'],
-            attention_probs_dropout_prob=config['perceiver_dropout'],
-            hidden_act="gelu",
-            initializer_range=0.02, 
-            layer_norm_eps=1e-12,
-        )
-
-        self.perceiver_model = PerceiverModel(perceiver_config)
-        self.perceiver_output_size = perceiver_config.d_latents
-
         # --- Bert4Rec forward layer initialisation ---
         self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
         self.dropout = nn.Dropout(self.hidden_dropout_prob)
-        self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
+        # Input the fused embedding instead of just the sequential embedding into the linear layer
+        self.output_ffn = nn.Linear(self.fused_embedding_size, self.hidden_size)
         self.output_gelu = nn.GELU()
         self.output_ln = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
         self.output_bias = nn.Parameter(torch.zeros(self.n_items))
