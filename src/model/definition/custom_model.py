@@ -22,7 +22,7 @@ class HybridRecommenderModel(SequentialRecommender):
         # this ensures pretrained SLM embeddings are not fine-tuned/updated during training
         # this preserves information obtained from SLM
         # any performance differential can be more clearly attributed to the impact of adding SLM embeddings
-        self.slm_item_embedding = nn.Embedding.from_pretrained(slm_pretrained_weights, freeze=True)
+        self.slm_item_embedding = nn.Embedding.from_pretrained(torch.from_numpy(slm_pretrained_weights), freeze=True)
 
         # --- Bert4Rec Transformer Encoder variables initialisation ---
         # from RecBole's BERT4Rec implementation
@@ -53,6 +53,18 @@ class HybridRecommenderModel(SequentialRecommender):
         self.initializer_range = config["initializer_range"]
         # Concatenated embedding dimension
         self.fused_embedding_size = self.hidden_size + self.slm_embedding_dim
+
+        # load dataset info
+        self.mask_token = self.n_items
+        self.mask_item_length = int(self.mask_ratio * self.max_seq_length)
+
+        # define layers and loss
+        self.item_embedding = nn.Embedding(
+            self.n_items + 1, self.hidden_size, padding_idx=0
+        )  # mask token add 1
+        self.position_embedding = nn.Embedding(
+            self.max_seq_length, self.hidden_size
+        )  # add mask_token at the last
 
         # Transformer initialisation
         self.encoder = TransformerEncoder(
@@ -104,6 +116,7 @@ class HybridRecommenderModel(SequentialRecommender):
         position_ids = position_ids.unsqueeze(0).expand_as(item_seq)
         position_embedding = self.position_embedding(position_ids)
         item_emb = self.item_embedding(item_seq)
+        item_ctx_emb = self.slm_item_embedding()
         input_emb = item_emb + position_embedding
         input_emb = self.LayerNorm(input_emb)
         input_emb = self.dropout(input_emb)
