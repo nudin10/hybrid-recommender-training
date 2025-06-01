@@ -22,11 +22,22 @@ class HybridRecommender(RecommenderSystemModel):
             dataset=self.train_data.dataset #type: ignore
         ).to(super().config["device"])
 
+        self.trainer: Trainer = None #type: ignore
+        
+
     def train(self):
-        trainer = Trainer(super().config, self.model)
-        best_valid_score, best_valid_result = trainer.fit(self.train_data)
+        if self.trainer is None:
+            self.trainer = Trainer(super().config, self.model)
+        
+        best_valid_score, best_valid_result = self.trainer.fit(self.train_data, self.valid_data, saved=True)
 
         return best_valid_score, best_valid_result
 
+
     def evaluate(self):
-        pass
+        if self.trainer is None:
+            self.trainer = Trainer(super().config, self.model)
+
+        test_result = self.trainer.evaluate(self.test_data)
+
+        return test_result
