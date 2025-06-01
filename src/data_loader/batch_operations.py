@@ -1,12 +1,12 @@
 import polars as pl
-from cache.redis_client import Redis_Client
+from src.cache.redis_client import Redis_Client
 from pathlib import Path
 from typing import Generator, List, Dict, Any
 import json
-from data_loader.embeddings_consolidator import mean_pooling_consolidator
+from src.data_loader.embeddings_consolidator import mean_pooling_consolidator
 import numpy as np
 import torch
-from errors.redis import RedisValueInvalid
+from src.errors.redis import RedisValueInvalid
 
 
 def load_into_redis_by_batch(r: Redis_Client, model_key:str, file_path: str, batch_num=1000):

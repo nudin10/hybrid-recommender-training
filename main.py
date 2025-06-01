@@ -6,11 +6,11 @@ from asyncio import run
 from src.cache.redis_client import init_redis
 from src.tools.telegram_bot import init_telegram_bot
 from src.tools.logger import init_global_logger
-from data_loader.data_loader import load_data_into_redis
-from model.model_data_loader import load_data
-from model.definition.recommendation_model import RecommenderSystemModel
-from model.hybrid_model import HybridRecommenderModel
-from model.bert4Rec import Bert4RecModel
+from src.data_loader.data_loader import load_data_into_redis
+from src.model.model_data_loader import load_data
+from src.model.definition.recommendation_model import RecommenderSystemModel
+from src.model.hybrid_model import HybridRecommenderModel
+from src.model.bert4Rec import Bert4RecModel
 from src.analysis.results import collect, analyse, visualise
 
 async def main():

@@ -1,8 +1,8 @@
 import redis
 import os
 import redis.exceptions
-from tools.logger import global_logger
-from errors.redis import RedisCredentialsNotFound
+from src.tools.logger import global_logger
+from src.errors.redis import RedisCredentialsNotFound
 
 class Redis_Client:
     def __init__(self) -> None:

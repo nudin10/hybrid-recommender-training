@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from recbole.data.dataset import SequentialDataset
 
+# Unused
 class CustomDataset(SequentialDataset):
     def __init__(self, config):
         super().__init__(config)

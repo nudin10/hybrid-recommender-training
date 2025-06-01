@@ -1,9 +1,9 @@
 import polars as pl
 from pathlib import Path
-from cache.redis_client import Redis_Client
-from data_loader.batch_operations import load_into_redis_by_batch
-from tools.telegram_bot import telegram_bot as b
-from tools.logger import global_logger as gl
+from src.cache.redis_client import Redis_Client
+from src.data_loader.batch_operations import load_into_redis_by_batch
+from src.tools.telegram_bot import telegram_bot as b
+from src.tools.logger import global_logger as gl
 
 async def load_data_into_redis(redis_client: Redis_Client, data_file_path: str):
     '''

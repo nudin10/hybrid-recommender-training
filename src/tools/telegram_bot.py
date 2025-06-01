@@ -1,7 +1,7 @@
 import os
 from telegram.ext import Application
 import asyncio
-from tools.logger import Logger
+from src.tools.logger import Logger
 import logging
 
 class TelegramBot:

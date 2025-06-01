@@ -5,6 +5,7 @@ from recbole.data.interaction import Interaction
 import numpy as np
 
 
+# Unused
 class ItemUserDataLoader(AbstractDataLoader):
     def __init__(self, config, dataset, sampler, shuffle=False):
         super().__init__(config, dataset, sampler, shuffle=shuffle)
