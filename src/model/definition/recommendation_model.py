@@ -16,6 +16,8 @@ class RecommenderSystemModel(ABC):
         self.logger.addHandler(c_handler)
         self.logger.info(self.config)
 
+        self.model_name=""
+
         super().__init__()
 
     @abstractmethod
