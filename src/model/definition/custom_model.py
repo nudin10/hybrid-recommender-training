@@ -86,6 +86,7 @@ class HybridRecommenderModel(SequentialRecommender):
         # --- Bert4Rec forward layer initialisation ---
         self.LayerNorm = nn.LayerNorm(self.hidden_size, eps=self.layer_norm_eps)
         self.dropout = nn.Dropout(self.hidden_dropout_prob)
+
         # Input the fused embedding instead of just the sequential embedding into the linear layer
         self.fusion_layer = nn.Linear(self.fused_embedding_size, self.hidden_size)
         self.output_ffn = nn.Linear(self.hidden_size, self.hidden_size)
@@ -182,6 +183,7 @@ class HybridRecommenderModel(SequentialRecommender):
             masked_index.size(0), masked_index.size(1), -1
         )  # [B mask_len max_len]
         # [B mask_len max_len] * [B max_len H] -> [B mask_len H]
+        
         # only calculate loss for masked position
         seq_output = torch.bmm(pred_index_map, seq_output)  # [B mask_len H]
 
@@ -223,9 +225,11 @@ class HybridRecommenderModel(SequentialRecommender):
         item_seq = interaction[self.ITEM_SEQ]
         item_seq_len = interaction[self.ITEM_SEQ_LEN]
         test_item = interaction[self.ITEM_ID]
+
         item_seq = self.reconstruct_test_data(item_seq, item_seq_len)
         seq_output = self.forward(item_seq)
-        seq_output = self.gather_indexes(seq_output, item_seq_len - 1)  # [B H]
+        seq_output = self.gather_indexes(seq_output, item_seq_len - 1)  # [B, H]
+
         test_item_emb = self.item_embedding(test_item)
         scores = (torch.mul(seq_output, test_item_emb)).sum(dim=1) + self.output_bias[
             test_item
