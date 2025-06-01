@@ -19,22 +19,12 @@ async def main():
         init_global_logger()
         print("Successfully initiated logger")
 
-        # print("Initialising Redis")
-        # r = init_redis()
-        # print("Successfully initiated Redis")
-
         print("Initialising Telegram bot")
         init_telegram_bot()
         print("Successfully initiated Telegram bot")
     
     except Exception as e:
         raise RuntimeError(f"Error setting up dependencies: {e}")
-
-    # try:
-    #     DATA_PATH="data"
-    #     await load_data_into_redis(r, DATA_PATH)
-    # except Exception as e:
-    #     raise RuntimeError(f"Error loading data into Redis: {e}")
     
     try:
         load_data()
@@ -50,7 +40,7 @@ async def main():
         ]
 
         for _model in models:
-            model: RecommenderSystemModel = _model()
+            model: Bert4RecModel | HybridRecommenderModel = _model()
             gl.info(f"Training model: {_model.model_name}")
 
             model.train()
