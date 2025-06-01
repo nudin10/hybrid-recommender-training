@@ -37,7 +37,7 @@ global_logger: Logger = None #type:ignore
 def init_global_logger(level=logging.INFO) -> Logger:
     global global_logger
     if global_logger is None:
-        global_logger = Logger(level)
+        global_logger = Logger(level=level)
     return global_logger
 
 def get_global_logger() -> Logger:

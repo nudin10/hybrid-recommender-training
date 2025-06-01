@@ -3,7 +3,7 @@ from pathlib import Path
 from src.cache.redis_client import Redis_Client
 from src.data_loader.batch_operations import load_into_redis_by_batch
 from src.tools.telegram_bot import telegram_bot as b
-from src.tools.logger import global_logger as gl
+from src.tools.logger import get_global_logger
 
 async def load_data_into_redis(redis_client: Redis_Client, data_file_path: str):
     '''
@@ -19,6 +19,8 @@ async def load_data_into_redis(redis_client: Redis_Client, data_file_path: str):
     for model_key in model_keys:
         message=f"Loading data for model: {model_key}"
         await b.send_message(message)
+        gl = get_global_logger()
+
         gl.info(message)
 
         file_path = data_file_path + f"/load_redis_{model_key}.ndjson"

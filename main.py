@@ -5,7 +5,7 @@ from asyncio import run
 
 from src.cache.redis_client import init_redis
 from src.tools.telegram_bot import init_telegram_bot
-from src.tools.logger import init_global_logger
+from src.tools.logger import init_global_logger, get_global_logger
 from src.data_loader.data_loader import load_data_into_redis
 from src.model.model_data_loader import load_data
 from src.model.definition.recommendation_model import RecommenderSystemModel
@@ -15,9 +15,13 @@ from src.analysis.results import collect, analyse, visualise
 
 async def main():
     try:
+        print("Initialising logger")
+        init_global_logger()
+        print("Successfully initiated logger")
+
         r = init_redis()
         init_telegram_bot()
-        init_global_logger()
+    
     except Exception as e:
         raise RuntimeError(f"Error setting up dependencies: {e}")
 

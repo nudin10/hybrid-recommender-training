@@ -1,7 +1,7 @@
 import redis
 import os
 import redis.exceptions
-from src.tools.logger import global_logger
+from src.tools.logger import get_global_logger
 from src.errors.redis import RedisCredentialsNotFound
 
 class Redis_Client:
@@ -10,8 +10,10 @@ class Redis_Client:
         REDIS_PORT = os.getenv("REDIS_PORT")
         REDIS_DB = os.getenv("REDIS_DB")
         
+        gl = get_global_logger()
+
         if not REDIS_HOST or not REDIS_PORT or not REDIS_DB:
-            global_logger.error("Redis credentials not found.")
+            gl.error("Redis credentials not found.")
             raise RedisCredentialsNotFound
         
         self.host = REDIS_HOST
@@ -21,9 +23,9 @@ class Redis_Client:
         try:
             self.client = redis.StrictRedis(host=self.host, port=self.port, db=self.db, decode_responses=True)
             self.client.ping()
-            global_logger.info("Successfully connected to redis")
+            gl.info("Successfully connected to redis")
         except redis.exceptions.ConnectionError as e:
-            global_logger.error(f"Couldn't connect to Redis: {e}")
+            gl.error(f"Couldn't connect to Redis: {e}")
             raise
         except Exception:
             raise
