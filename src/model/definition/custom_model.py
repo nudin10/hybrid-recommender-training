@@ -144,8 +144,7 @@ class HybridRecommenderModel(SequentialRecommender):
         fused_emb = self.fusion_layer(fused_emb) # [B, L, hidden_size]
         
         # Apply layer norm and dropout
-        input_emb = torch.concat(item_emb + position_embedding, slm_emb)
-        input_emb = self.LayerNorm(input_emb)
+        input_emb = self.LayerNorm(fused_emb)
         input_emb = self.dropout(input_emb)
 
         # Pass through transformer with bidirectional attention (BERT-style)
