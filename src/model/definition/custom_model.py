@@ -12,7 +12,8 @@ class HybridRecommenderModel(SequentialRecommender):
         # Variable initialisation
 
         # --- SLM embeddings initialisation ---
-        slm_pretrained_weights = dataset.get_preload_weight(self.item_id_field)
+        self.item_id_emb_field = config["alias_of_item_id"][0]
+        slm_pretrained_weights = dataset.get_preload_weight(self.item_id_emb_field)
         if slm_pretrained_weights is None:
             raise ValueError("Preloaded SLM embeddings not found!")
 

@@ -1,6 +1,6 @@
 # Additional feature
 additional_feat_suffix: ["emb"]
-load_col:
-  item_embedding: [item_id, item_embedding]
+alias_of_item_id:
+  - iid
 preload_weight:
-  item_id: item_embedding
+  iid: item_emb
