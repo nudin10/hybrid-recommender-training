@@ -3,15 +3,10 @@ load_dotenv()
 
 from asyncio import run
 
-from src.cache.redis_client import init_redis
 from src.tools.telegram_bot import init_telegram_bot
 from src.tools.logger import init_global_logger, get_global_logger
-from src.data_loader.data_loader import load_data_into_redis
 from src.model.model_data_loader import load_data
-from src.model.definition.recommendation_model import RecommenderSystemModel
-from src.model.hybrid_model import HybridRecommenderModel
-from src.model.bert4Rec import Bert4RecModel
-from src.analysis.results import collect, analyse, visualise
+from src.executor.all import run_all
 
 async def main():
     try:
@@ -33,22 +28,11 @@ async def main():
     
     try:
         gl = get_global_logger()
+        gl.info("Running all")
 
-        models = [
-            Bert4RecModel,
-            HybridRecommenderModel
-        ]
+        run_all()
 
-        for _model in models:
-            model: Bert4RecModel | HybridRecommenderModel = _model()
-            gl.info(f"Training model: {_model.model_name}")
-
-            model.train()
-            model.evaluate()
-        
-            collect()
-            analyse()
-            visualise()
+        gl.info("Finished running all")
 
     except Exception as e:
         raise RuntimeError(f"Error loading training Model: {e}")
