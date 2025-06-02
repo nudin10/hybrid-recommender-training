@@ -22,11 +22,11 @@ async def run_all() -> None:
             "dataset_dir_name" : "phi",
             "model": HybridRecommender
         },
-        # {
-        #     "name": "HybridQwen",
-        #     "dataset_dir_name" : "qwen",
-        #     "model": HybridRecommender
-        # }
+        {
+            "name": "HybridQwen",
+            "dataset_dir_name" : "qwen",
+            "model": HybridRecommender
+        }
     ]
 
     for model_config in models:

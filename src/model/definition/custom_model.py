@@ -23,7 +23,7 @@ class HybridRecommenderModel(SequentialRecommender):
         # this ensures pretrained SLM embeddings are not fine-tuned/updated during training
         # this preserves information obtained from SLM
         # any performance differential can be more clearly attributed to the impact of adding SLM embeddings
-        self.slm_item_embedding = nn.Embedding.from_pretrained(torch.from_numpy(slm_pretrained_weights), freeze=True)
+        self.slm_item_embedding = nn.Embedding.from_pretrained(torch.from_numpy(slm_pretrained_weights).float(), freeze=True)
 
         # --- Bert4Rec Transformer Encoder variables initialisation ---
         # from RecBole's BERT4Rec implementation
@@ -140,7 +140,8 @@ class HybridRecommenderModel(SequentialRecommender):
 
         # Fuse embeddings -> sequential (item + position) + SLM contextual
         sequential_emb = item_emb + position_embedding # [B, L, hidden size]
-        fused_emb = torch.cat([sequential_emb, slm_emb], dim=1) # [B, L, hidden size * 2]
+        # fused_emb = torch.cat([sequential_emb, slm_emb], dim=1) # [B, L, hidden size * 2]
+        fused_emb = torch.cat([sequential_emb, slm_emb], dim=-1) # [B, L, hidden size * 2]
         fused_emb = self.fusion_layer(fused_emb) # [B, L, hidden_size]
         
         # Apply layer norm and dropout
