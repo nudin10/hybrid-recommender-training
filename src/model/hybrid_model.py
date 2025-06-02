@@ -4,6 +4,7 @@ from recbole.data.dataset.sequential_dataset import SequentialDataset
 from recbole.data import create_dataset, data_preparation
 from recbole.trainer import Trainer
 from src.errors.model import TrainingException, EvaluationException
+import torch
 
 class HybridRecommender(RecommenderSystemModel):
     def __init__(self, dataset_dir_name: str) -> None:
@@ -46,3 +47,25 @@ class HybridRecommender(RecommenderSystemModel):
             raise EvaluationException(e)
 
         return test_result
+    
+    def cleanup(self):
+        self.model = None
+        if self.trainer is not None:
+            if hasattr(self.trainer, 'model'):
+                self.trainer.model = None
+            
+            if hasattr(self.trainer, 'optimizer') and self.trainer.optimizer is not None:
+                self.trainer.optimizer = None #type: ignore
+
+            self.trainer = None #type: ignore
+
+        self.train_data = None
+        self.valid_data = None
+        self.test_data = None
+        self.dataset = None #type: ignore
+        self.contextual_embeddings = None
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+            

@@ -43,6 +43,8 @@ def run_all():
         )
         stored_path = result.store()
         gl.info(f"Successfully stored result in: {str(stored_path.resolve())}")
+
+        model.cleanup()
         
         gc.collect()
 

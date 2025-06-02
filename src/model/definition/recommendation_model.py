@@ -22,8 +22,12 @@ class RecommenderSystemModel(ABC):
 
     @abstractmethod
     def train(self):
-        pass
+        ...
 
     @abstractmethod
     def evaluate(self):
-        pass
+        ...
+
+    @abstractmethod
+    def cleanup(self):
+        ...
