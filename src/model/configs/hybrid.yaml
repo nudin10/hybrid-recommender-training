@@ -1,5 +1,5 @@
 # Additional feature
-additional_feat_suffix: [item_embedding]
+additional_feat_suffix: ["emb"]
 load_col:
   item_embedding: [item_id, item_embedding]
 preload_weight:

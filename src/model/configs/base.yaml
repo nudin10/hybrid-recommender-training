@@ -1,7 +1,7 @@
 # Dataset column definition
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
-ITEM_EMBEDDING_FIELD: item_embedding
+ITEM_EMB_FIELD: item_emb
 
 # Sequence config
 MAX_ITEM_LIST_LENGTH: 50
