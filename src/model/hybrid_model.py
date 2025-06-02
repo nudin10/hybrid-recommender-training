@@ -8,7 +8,6 @@ import torch
 
 class HybridRecommender(RecommenderSystemModel):
     def __init__(self, dataset_dir_name: str) -> None:
-        self.model_name="HybridRecommender"
         self.dataset_dir_name = dataset_dir_name
         self.config_files = ["configs/base.yaml", "configs/hybrid.yaml"]
 
@@ -68,4 +67,3 @@ class HybridRecommender(RecommenderSystemModel):
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
             torch.cuda.synchronize()
-            

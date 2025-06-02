@@ -1,7 +1,7 @@
 from src.tools.logger import get_global_logger
 from src.analysis.results import Result
 from src.model.hybrid_model import HybridRecommender
-from src.model.bert4Rec import Bert4RecModel
+from src.model.bert4Rec import Bert4Rec
 
 import gc
 
@@ -12,7 +12,7 @@ def run_all():
         {
             "name": "Bert4Rec",
             "dataset_dir_name" : "base",
-            "model": Bert4RecModel
+            "model": Bert4Rec
         },
         {
             "name": "HybridPhi",
@@ -30,7 +30,7 @@ def run_all():
         gl.info(f"Training base {model_config['name']}")
         result = Result(name=model_config["name"])
 
-        model: Bert4RecModel | HybridRecommender  = model_config["model"](dataset_dir = model_config["dataset_dir_name"])
+        model: Bert4Rec | HybridRecommender  = model_config["model"](dataset_dir = model_config["dataset_dir_name"])
         best_valid_score, best_valid_result = model.train()
         test_result = model.evaluate()
 

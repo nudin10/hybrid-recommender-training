@@ -1,4 +1,4 @@
-from recbole.model.sequential_recommender.bert4rec import BERT4Rec
+from recbole.model.sequential_recommender.bert4rec import BERT4Rec as B4R
 from src.model.definition.recommendation_model import RecommenderSystemModel
 from recbole.config import Config
 from recbole.data.dataset.sequential_dataset import SequentialDataset
@@ -7,9 +7,8 @@ from recbole.trainer import Trainer
 from src.errors.model import TrainingException, EvaluationException
 import torch
 
-class Bert4RecModel(RecommenderSystemModel):
+class Bert4Rec(RecommenderSystemModel):
     def __init__(self, dataset_dir_name: str = "base") -> None:
-        self.model_name="Bert4Rec"
         self.dataset_dir_name = dataset_dir_name
         self.config_files = ["configs/base.yaml", "configs/bert4Rec.yaml"]
 
@@ -20,7 +19,7 @@ class Bert4RecModel(RecommenderSystemModel):
 
         self.train_data, self.valid_data, self.test_data = data_preparation(super().config, self.dataset)
 
-        self.model = BERT4Rec(
+        self.model = B4R(
             config=super().config,
             dataset=self.train_data.dataset #type: ignore
         ).to(super().config["device"])
