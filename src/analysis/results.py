@@ -27,8 +27,9 @@ class Result:
     def store(self) -> Path:
         try:
             assert str.strip(self.name) != ""
+            assert self.name is not None
         except AssertionError:
-            raise AssertionError("Result name cannot be empty")
+            raise AssertionError("Result name cannot be empty or undefined")
         
         file_name = f"{self.name}.csv"
         file_path = self.store_path / file_name

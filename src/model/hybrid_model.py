@@ -11,26 +11,26 @@ class HybridRecommender(RecommenderSystemModel):
         self.dataset_dir_name = dataset_dir_name
         self.config_files = ["configs/base.yaml", "configs/hybrid.yaml"]
 
-        super().__init__(model=self.model_name, dataset=self.dataset_dir_name, config_files=self.config_files)
+        super().__init__(model="HybridRecommender", dataset=self.dataset_dir_name, config_files=self.config_files)
 
-        self.dataset: SequentialDataset = create_dataset(super().config)
+        self.dataset: SequentialDataset = create_dataset(self.config)
         self.contextual_embeddings = self.dataset.get_preload_weight("iid")
 
-        self.train_data, self.valid_data, self.test_data = data_preparation(super().config, self.dataset)
+        self.train_data, self.valid_data, self.test_data = data_preparation(self.config, self.dataset)
 
         self.model = HybridRecommenderModel(
-            config=super().config,
+            config=self.config,
             dataset=self.train_data.dataset #type: ignore
-        ).to(super().config["device"])
+        ).to(self.config["device"])
 
         self.trainer: Trainer = None #type: ignore
         
     def train(self):
         if self.trainer is None:
-            self.trainer = Trainer(super().config, self.model)
+            self.trainer = Trainer(self.config, self.model)
         
         try:
-            best_valid_score, best_valid_result = self.trainer.fit(self.train_data, self.valid_data, saved=True)
+            best_valid_score, best_valid_result = self.trainer.fit(self.train_data, self.valid_data, saved=True, show_progress=True)
         except Exception as e:
             raise TrainingException(e)
 
@@ -38,10 +38,10 @@ class HybridRecommender(RecommenderSystemModel):
 
     def evaluate(self):
         if self.trainer is None:
-            self.trainer = Trainer(super().config, self.model)
+            self.trainer = Trainer(self.config, self.model)
 
         try:
-            test_result = self.trainer.evaluate(self.test_data)
+            test_result = self.trainer.evaluate(self.test_data, show_progress=True)
         except Exception as e:
             raise EvaluationException(e)
 

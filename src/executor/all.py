@@ -19,20 +19,24 @@ def run_all():
             "dataset_dir_name" : "phi",
             "model": HybridRecommender
         },
-        {
-            "name": "HybridQwen",
-            "dataset_dir_name" : "qwen",
-            "model": HybridRecommender
-        }
+        # {
+        #     "name": "HybridQwen",
+        #     "dataset_dir_name" : "qwen",
+        #     "model": HybridRecommender
+        # }
     ]
 
     for model_config in models:
         gl.info(f"Training base {model_config['name']}")
         result = Result(name=model_config["name"])
 
-        model: Bert4Rec | HybridRecommender  = model_config["model"](dataset_dir = model_config["dataset_dir_name"])
-        best_valid_score, best_valid_result = model.train()
-        test_result = model.evaluate()
+        model: Bert4Rec | HybridRecommender  = model_config["model"](dataset_dir_name = model_config["dataset_dir_name"])
+
+        try:
+            best_valid_score, best_valid_result = model.train()
+            test_result = model.evaluate()
+        except:
+            raise
 
         result.collect(
             {

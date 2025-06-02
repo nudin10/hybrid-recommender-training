@@ -1,11 +1,28 @@
 from abc import ABC, abstractmethod
 from recbole.config import Config
 from recbole.utils import init_logger, init_seed
+from src.tools.common import get_project_root
+from pathlib import Path
 import logging
 
 class RecommenderSystemModel(ABC):
     def __init__(self, model: str, dataset: str, config_files: list[str]) -> None:
-        self.config = Config(model=model, dataset=dataset, config_file_list=config_files)
+        absolute_config_files = []
+        project_root = get_project_root()
+        
+        for config in config_files:
+            config_path = Path(config)
+            if not config_path.is_absolute():
+                absolute_path = (project_root / "src" / "model" / config_path).resolve()
+            else:
+                absolute_path = config_path.resolve()
+            
+            if not absolute_path.exists():
+                raise FileNotFoundError(f"Config file not found: {str(absolute_path)}")
+            
+            absolute_config_files.append(str(absolute_path))
+
+        self.config = Config(model=model, dataset=dataset, config_file_list=absolute_config_files)
         
         init_seed(self.config["seed"], self.config["reproducibility"])
 

@@ -8,6 +8,9 @@ from src.tools.logger import init_global_logger, get_global_logger
 from src.model.model_data_loader import load_data
 from src.executor.all import run_all
 
+import traceback
+import sys
+
 async def main():
     try:
         print("Initialising logger")
@@ -40,12 +43,17 @@ async def main():
         gl.info(m)
         await b.send_message(m)
 
-    except Exception as e:
-        raise RuntimeError(f"Error loading training Model: {e}")
+    except:
+        raise
 
 if __name__ == "__main__":
     try:
         run(main())
     except Exception as e:
-        print(f"Application terminated due to unhandled error: {e}")
-        exit(1)
+        print(f"Application terminated due to error -> {type(e).__name__}: {e}")
+
+        print("\n--- Full Traceback ---", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr) # By default it prints to sys.stderr
+        print("----------------------\n", file=sys.stderr)
+
+        sys.exit(1)
