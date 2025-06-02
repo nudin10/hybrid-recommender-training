@@ -3,6 +3,7 @@
 *.ndjson
 *.inter
 *.item
+*.emb
 
 # Draft
 _scratch/

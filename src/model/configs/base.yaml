@@ -2,6 +2,7 @@
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
 ITEM_EMB_FIELD: item_emb
+TIME_FIELD: timestamp
 
 # Sequence config
 MAX_ITEM_LIST_LENGTH: 50
@@ -12,3 +13,21 @@ state: DEBUG
 reproducibility: False # set to False for faster training
 show_progress: True
 seed: 42
+
+# Training and evaluation config
+loss_type: BPR
+epochs: 50
+stopping_step: 10
+train_batch_size: 4096
+eval_batch_size: 4096
+neg_sampling:
+    uniform: 1
+eval_args:
+    group_by: user
+    order: TO
+    split: {'RS': [0.8,0.1,0.1]}
+    mode: full
+metrics: ['Recall', 'MRR', 'NDCG', 'Hit', 'Precision']
+topk: 10
+valid_metric: MRR@10
+metric_decimal_place: 4
