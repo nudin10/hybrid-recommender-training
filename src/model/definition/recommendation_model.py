@@ -6,7 +6,7 @@ from pathlib import Path
 import logging
 
 class RecommenderSystemModel(ABC):
-    def __init__(self, model: str, dataset: str, config_files: list[str]) -> None:
+    def __init__(self, model, dataset: str, config_files: list[str]) -> None:
         absolute_config_files = []
         project_root = get_project_root()
         

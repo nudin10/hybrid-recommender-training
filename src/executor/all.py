@@ -30,11 +30,11 @@ async def run_all() -> None:
     ]
 
     for model_config in models:
-        m = f"Training base {model_config['name']}"
+        m = f"Training {model_config['name']}"
         gl.info(m)
         await b.send_message(m)
 
-        unique_suffix = datetime.now().strftime("%m%d_%H%M%S")
+        unique_suffix = datetime.now().strftime("%y%m%d_%H%M%S")
         result = Result(name=model_config["name"]+"_"+unique_suffix)
 
         model: Bert4Rec | HybridRecommender  = model_config["model"](dataset_dir_name = model_config["dataset_dir_name"])
@@ -62,4 +62,4 @@ async def run_all() -> None:
         
         gc.collect()
 
-        gl.info(f"Finished training base {model_config['name']}")
+        gl.info(f"Finished training {model_config['name']}")

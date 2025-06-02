@@ -18,20 +18,29 @@ reproducibility: False # set to False for faster training
 show_progress: True
 seed: 42
 
-# Training and evaluation config
+# Training config
 loss_type: BPR
-epochs: 50
+epochs: 300
 stopping_step: 10
-train_batch_size: 4096
-eval_batch_size: 4096
+learner: 'adam'
+learning_rate: 0.001
+train_neg_sample_args:
+  distribution: 'uniform'
+  sample_num: 1
+  alpha: 1.0
+  dynamic: false
+train_batch_size: 2048
 neg_sampling:
     uniform: 1
+
+# Evaluation config
+eval_batch_size: 4096
 eval_args:
     group_by: user
     order: TO
     split: {'RS': [0.8,0.1,0.1]}
     mode: full
 metrics: ['Recall', 'MRR', 'NDCG', 'Hit', 'Precision']
-topk: 10
+topk: [5, 10, 20]
 valid_metric: MRR@10
 metric_decimal_place: 4

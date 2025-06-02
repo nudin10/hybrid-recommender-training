@@ -11,7 +11,7 @@ class HybridRecommender(RecommenderSystemModel):
         self.dataset_dir_name = dataset_dir_name
         self.config_files = ["configs/base.yaml", "configs/hybrid.yaml"]
 
-        super().__init__(model="HybridRecommender", dataset=self.dataset_dir_name, config_files=self.config_files)
+        super().__init__(model=HybridRecommenderModel, dataset=self.dataset_dir_name, config_files=self.config_files)
 
         self.dataset: SequentialDataset = create_dataset(self.config)
         self.contextual_embeddings = self.dataset.get_preload_weight("iid")
