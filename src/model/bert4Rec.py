@@ -4,9 +4,10 @@ from recbole.config import Config
 from recbole.data.dataset.sequential_dataset import SequentialDataset
 from recbole.data import create_dataset, data_preparation
 from recbole.trainer import Trainer
+from src.errors.model import TrainingException, EvaluationException
 
 class Bert4RecModel(RecommenderSystemModel):
-    def __init__(self, dataset_dir_name: str) -> None:
+    def __init__(self, dataset_dir_name: str = "base") -> None:
         self.model_name="Bert4Rec"
         self.dataset_dir_name = dataset_dir_name
         self.config_files = ["configs/base.yaml", "configs/bert4Rec.yaml"]
@@ -24,21 +25,25 @@ class Bert4RecModel(RecommenderSystemModel):
         ).to(super().config["device"])
 
         self.trainer: Trainer = None #type: ignore
-        
 
     def train(self):
         if self.trainer is None:
             self.trainer = Trainer(super().config, self.model)
         
-        best_valid_score, best_valid_result = self.trainer.fit(self.train_data, self.valid_data, saved=True)
+        try:
+            best_valid_score, best_valid_result = self.trainer.fit(self.train_data, self.valid_data, saved=True)
+        except Exception as e:
+            raise TrainingException(e)
 
         return best_valid_score, best_valid_result
-
 
     def evaluate(self):
         if self.trainer is None:
             self.trainer = Trainer(super().config, self.model)
 
-        test_result = self.trainer.evaluate(self.test_data)
+        try:
+            test_result = self.trainer.evaluate(self.test_data)
+        except Exception as e:
+            raise EvaluationException(e)
 
         return test_result

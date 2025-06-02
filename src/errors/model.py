@@ -1,5 +1,5 @@
 class TrainingException(Exception):
     pass
 
-class EvaluateException(Exception):
+class EvaluationException(Exception):
     pass
