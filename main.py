@@ -33,13 +33,13 @@ async def main():
         gl = get_global_logger()
         b = get_telegram_bot()
 
-        m = "Running all"
+        m = "Starting recommender model program"
         gl.info(m)
         await b.send_message(m)
 
-        run_all()
+        await run_all()
 
-        m = "Finished running all"
+        m = "Finished running recommender model program"
         gl.info(m)
         await b.send_message(m)
 

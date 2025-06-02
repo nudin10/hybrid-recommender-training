@@ -15,7 +15,7 @@ class Bert4Rec(RecommenderSystemModel):
         super().__init__(model="BERT4Rec", dataset=self.dataset_dir_name, config_files=self.config_files)
 
         self.dataset: SequentialDataset = create_dataset(self.config)
-        self.contextual_embeddings = self.dataset.get_preload_weight("iid")
+        # self.contextual_embeddings = self.dataset.get_preload_weight("iid")
 
         self.train_data, self.valid_data, self.test_data = data_preparation(self.config, self.dataset)
 

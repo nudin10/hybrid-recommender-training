@@ -1,8 +1,12 @@
+# Dataset config
+"dataset_dir": "data"
+
 # Dataset column definition
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
 ITEM_EMB_FIELD: item_emb
 TIME_FIELD: timestamp
+load_col: {"inter": ["user_id", "item_id", "timestamp"], "emb": ["iid", "item_emb"], "item": ["item_id", "categories", "average_rating", "rating_number"]}
 
 # Sequence config
 MAX_ITEM_LIST_LENGTH: 50

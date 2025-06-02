@@ -1,12 +1,15 @@
 from src.tools.logger import get_global_logger
+from src.tools.telegram_bot import get_telegram_bot
 from src.analysis.results import Result
 from src.model.hybrid_model import HybridRecommender
 from src.model.bert4Rec import Bert4Rec
+from datetime import datetime
 
 import gc
 
-def run_all():
+async def run_all() -> None:
     gl = get_global_logger()
+    b = get_telegram_bot()
 
     models = [
         {
@@ -27,8 +30,12 @@ def run_all():
     ]
 
     for model_config in models:
-        gl.info(f"Training base {model_config['name']}")
-        result = Result(name=model_config["name"])
+        m = f"Training base {model_config['name']}"
+        gl.info(m)
+        await b.send_message(m)
+
+        unique_suffix = datetime.now().strftime("%m%d_%H%M%S")
+        result = Result(name=model_config["name"]+"_"+unique_suffix)
 
         model: Bert4Rec | HybridRecommender  = model_config["model"](dataset_dir_name = model_config["dataset_dir_name"])
 
@@ -46,7 +53,10 @@ def run_all():
             }
         )
         stored_path = result.store()
-        gl.info(f"Successfully stored result in: {str(stored_path.resolve())}")
+        
+        m = f"Successfully stored result in: {str(stored_path.resolve())}"
+        gl.info(m)
+        await b.send_message(m)
 
         model.cleanup()
         

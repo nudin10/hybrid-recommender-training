@@ -4,6 +4,14 @@
 *.inter
 *.item
 *.emb
+*.csv
+
+# Tensorlogs
+log_tensorboard/
+
+# RecBole
+log/
+*.pth
 
 # Draft
 _scratch/

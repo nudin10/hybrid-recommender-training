@@ -24,6 +24,9 @@ class RecommenderSystemModel(ABC):
 
         self.config = Config(model=model, dataset=dataset, config_file_list=absolute_config_files)
         
+        data_parent_dir = (project_root / self.config["dataset_dir"] / dataset).resolve() # type: ignore
+        self.config["data_path"] = str(data_parent_dir)
+        
         init_seed(self.config["seed"], self.config["reproducibility"])
 
         self.model_name = type(self).__name__ 
